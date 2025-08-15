@@ -4,7 +4,7 @@
     <div class="loading-content">
       <div class="loading-spinner"></div>
       <h2>Loading AI Model...</h2>
-      <p>{{ loadingStatus }}</p>
+      <p>{{ loadingStatus  ?? 'Initializing...' }}</p>
       <div class="loading-progress">
         <div class="progress-bar">
           <div class="progress-fill"></div>

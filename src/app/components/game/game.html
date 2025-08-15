@@ -21,8 +21,8 @@
     </div>
 
     <!-- Chat Messages -->
-    <div class="chat-container">
-      <div class="chat-messages" #chatMessagesContainer>
+    <div class="chat-container" #chatMessagesContainer>
+      <div class="chat-messages">
         <div *ngFor="let message of chatMessages" 
              [ngClass]="{'user-message': message.isUser, 'bot-message': !message.isUser}"
              class="message">

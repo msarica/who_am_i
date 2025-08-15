@@ -13,27 +13,24 @@ import { Subscription } from 'rxjs';
 })
 export class AppComponent implements OnInit, OnDestroy {
   title = 'Who am I?';
-  isLoading = true;
+  isLoading = false;
   loadingStatus = 'Initializing...';
   private subscription: Subscription | null = null;
 
   constructor(private inferenceService: InferenceService) {}
 
   ngOnInit(): void {
+    this.inferenceService.initializeEngine('SmolLM2-1.7B-Instruct-q4f16_1-MLC');
+    
     this.subscription = this.inferenceService.getInitializationStatus().subscribe(status => {
-      this.loadingStatus = status;
-      if (status === 'Ready') {
+      if(status.status === 'NOT_INITIALIZED') {
         this.isLoading = false;
-      } else if (status === 'Failed to initialize') {
-        this.isLoading = false;
-        // You might want to show an error message here
+        this.loadingStatus = 'Not initialized';
+        return;
       }
-    });
 
-    // Start initializing the model
-    this.inferenceService.initializeEngine().catch(error => {
-      console.error('Failed to initialize model:', error);
-      this.isLoading = false;
+      this.loadingStatus = status.progress.text;
+      this.isLoading = status.status !== 'READY';
     });
   }
 

@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { InferenceService, InferenceResponse } from './inference.service';
+import { InferenceService, InferenceResponse, InferenceStatus } from './inference.service';
 import { ChatCompletion } from '@mlc-ai/web-llm';
+import dedent from 'dedent';
 
 export interface GameResponse {
   result: 'YES' | 'NO' | 'NOT_VALID';
@@ -64,14 +65,15 @@ export class GameService {
     }
 
     // Use the inference service to process the question with game-specific prompt
-    const systemPrompt = `You are playing a "Who Am I?" game. The character is "${this.character}" and the theme is "${this.theme}". 
-    The player asks yes/no questions to guess the character. 
-    You must respond with a reasoning and an answer in the following format:
-    <response>
-      <reasoning> very short reasoning </reasoning>
-      <answer> answer to the question YES|NO|NOT_VALID </answer>
-    </response>`;
-
+    const systemPrompt = dedent`You are playing a "Who Am I?" game. The character is "${this.character}" in the context of "${this.theme}". 
+    The player asks a yes/no question about the character. 
+    Use chain of thought approach, explain a short reasoning before answering. 
+    After explaining the reasoning, respond with an answer in the following format:
+    
+    <REASONING> a short reasoning </REASONING>
+    <ANSWER> answer to the question YES|NO|NOT_VALID </ANSWER>
+    `;
+    
     const fullPrompt = `<question>${question}</question>`;
 
     const response = await this.inferenceService.makeInferenceCall({
@@ -97,7 +99,7 @@ export class GameService {
     let win = false;
 
     // Extract answer from XML-like tags if present
-    const answerMatch = content.match(/<answer>(YES|NO|NOT_VALID)<\/answer>/i);
+    const answerMatch = content.match(/<ANSWER>\s*(YES|NO|NOT_VALID)\s*<\/ANSWER>/i);
     if (answerMatch) {
       result = answerMatch[1] as 'YES' | 'NO' | 'NOT_VALID';
     } else {
@@ -131,7 +133,7 @@ export class GameService {
   /**
    * Get the initialization status of the inference service
    */
-  getInferenceStatus(): Observable<string> {
+  getInferenceStatus(): Observable<InferenceStatus> {
     return this.inferenceService.getInitializationStatus();
   }
 

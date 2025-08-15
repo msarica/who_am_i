@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { GameService, GameResponse } from '../../services/game.service';
@@ -18,18 +18,37 @@ interface ChatMessage {
   templateUrl: './game.html',
   styleUrl: './game.css'
 })
-export class GameComponent implements OnInit {
+export class GameComponent implements OnInit, AfterViewChecked {
+  @ViewChild('chatMessagesContainer', { static: false }) chatMessagesContainer!: ElementRef;
+  
   gameStarted: boolean = false;
   character: string = '';
   currentQuestion: string = '';
   chatMessages: ChatMessage[] = [];
   isLoading: boolean = false;
+  private shouldScrollToBottom: boolean = false;
 
   constructor(
     private gameService: GameService,
   ) {}
 
   ngOnInit(): void {
+  }
+
+  ngAfterViewChecked(): void {
+    if (this.shouldScrollToBottom) {
+      this.scrollToBottom();
+      this.shouldScrollToBottom = false;
+    }
+  }
+
+  private scrollToBottom(): void {
+    try {
+      const element = this.chatMessagesContainer.nativeElement;
+      element.scrollTop = element.scrollHeight;
+    } catch (err) {
+      console.error('Error scrolling to bottom:', err);
+    }
   }
 
   async startGame(): Promise<void> {
@@ -57,6 +76,8 @@ export class GameComponent implements OnInit {
     };
 
     this.chatMessages.push(userMessage);
+    this.shouldScrollToBottom = true;
+    
     const questionText = this.currentQuestion;
     this.currentQuestion = '';
     this.isLoading = true;
@@ -71,6 +92,7 @@ export class GameComponent implements OnInit {
       };
 
       this.chatMessages.push(botMessage);
+      this.shouldScrollToBottom = true;
 
       if (response.win) {
         // Game won logic could be added here
@@ -84,6 +106,7 @@ export class GameComponent implements OnInit {
         timestamp: new Date()
       };
       this.chatMessages.push(errorMessage);
+      this.shouldScrollToBottom = true;
     } finally {
       this.isLoading = false;
     }
