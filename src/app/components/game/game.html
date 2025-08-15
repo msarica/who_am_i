@@ -1,0 +1,41 @@
+<div class="game-container">
+  <!-- Start Game Panel -->
+  <div *ngIf="!gameStarted" class="start-panel">
+    <h1>Who am I?</h1>
+    <p>Think of a character and I'll try to guess it by asking yes/no questions!</p>
+    <button (click)="startGame()" class="start-button">Start Game</button>
+  </div>
+
+  <!-- Game Interface -->
+  <div *ngIf="gameStarted" class="game-interface">
+    <div class="header">
+      <h2>Character: {{ character }}</h2>
+      <button (click)="resetGame()" class="reset-button">New Game</button>
+    </div>
+
+    <!-- Chat Messages -->
+    <div class="chat-container">
+      <div class="chat-messages" #chatMessagesContainer>
+        <div *ngFor="let message of chatMessages" 
+             [ngClass]="{'user-message': message.isUser, 'bot-message': !message.isUser}"
+             class="message">
+          <div class="message-content">
+            <span class="message-text">{{ message.text }}</span>
+            <span class="message-time">{{ message.timestamp | date:'shortTime' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Question Input -->
+    <div class="question-input">
+      <input 
+        type="text" 
+        [(ngModel)]="currentQuestion" 
+        placeholder="Ask a yes/no question..."
+        (keyup.enter)="askQuestion()"
+        class="question-field">
+      <button (click)="askQuestion()" class="ask-button">Ask</button>
+    </div>
+  </div>
+</div>

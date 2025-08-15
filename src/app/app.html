@@ -1,0 +1,20 @@
+<div class="app-container">
+  <!-- Loading Screen -->
+  <div *ngIf="isLoading" class="loading-screen">
+    <div class="loading-content">
+      <div class="loading-spinner"></div>
+      <h2>Loading AI Model...</h2>
+      <p>{{ loadingStatus }}</p>
+      <div class="loading-progress">
+        <div class="progress-bar">
+          <div class="progress-fill"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Game Component -->
+  <app-game *ngIf="!isLoading"></app-game>
+</div>
+
+
