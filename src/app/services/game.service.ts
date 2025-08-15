@@ -14,7 +14,8 @@ export interface GameResponse {
   providedIn: 'root'
 })
 export class GameService {
-  private character: string = 'Mario';
+  private character: string = '';
+  private theme: string = 'disney';
   private gameStarted: boolean = false;
 
   constructor(private inferenceService: InferenceService) { }
@@ -33,7 +34,7 @@ export class GameService {
         { role: 'system', content: `You are a helpful assistant to a game called "Who Am I?".
         You are given a question and you must respond with the name of the main character and nothing else.
         You must respond with the name of one character and nothing else.` },
-        { role: 'user', content: `Pick a disney character.` }
+        { role: 'user', content: `Pick a character from the theme "${this.theme}".` }
       ],
       temperature: 0.7,
       max_tokens: 100,
@@ -63,12 +64,12 @@ export class GameService {
     }
 
     // Use the inference service to process the question with game-specific prompt
-    const systemPrompt = `You are playing a "Who Am I?" game. The character is "${this.character}". 
+    const systemPrompt = `You are playing a "Who Am I?" game. The character is "${this.character}" and the theme is "${this.theme}". 
     The player asks yes/no questions to guess the character. 
     You must respond with a reasoning and an answer in the following format:
     <response>
       <reasoning> very short reasoning </reasoning>
-      <answer>YES</answer> or <answer>NO</answer> or <answer>NOT_VALID</answer>
+      <answer> answer to the question YES|NO|NOT_VALID </answer>
     </response>`;
 
     const fullPrompt = `<question>${question}</question>`;
