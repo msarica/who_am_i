@@ -23,6 +23,7 @@ export class GameComponent implements OnInit {
   character: string = '';
   currentQuestion: string = '';
   chatMessages: ChatMessage[] = [];
+  isLoading: boolean = false;
 
   constructor(
     private gameService: GameService,
@@ -33,6 +34,7 @@ export class GameComponent implements OnInit {
 
   async startGame(): Promise<void> {
     try {
+      this.isLoading = true;
       await this.gameService.startGame();
       this.gameStarted = true;
       this.chatMessages = [];
@@ -40,11 +42,13 @@ export class GameComponent implements OnInit {
       console.error('Failed to start game:', error);
       // You might want to show an error message to the user here
       alert('Failed to start game. Please make sure the AI model is loaded.');
+    } finally {
+      this.isLoading = false;
     }
   }
 
   async askQuestion(): Promise<void> {
-    if (!this.currentQuestion.trim()) return;
+    if (!this.currentQuestion.trim() || this.isLoading) return;
 
     const userMessage: ChatMessage = {
       text: this.currentQuestion,
@@ -53,8 +57,12 @@ export class GameComponent implements OnInit {
     };
 
     this.chatMessages.push(userMessage);
+    const questionText = this.currentQuestion;
+    this.currentQuestion = '';
+    this.isLoading = true;
 
-    const response= await this.gameService.askQuestion(this.currentQuestion);
+    try {
+      const response = await this.gameService.askQuestion(questionText);
       const botMessage: ChatMessage = {
         text: this.getResponseText(response),
         isUser: false,
@@ -68,8 +76,17 @@ export class GameComponent implements OnInit {
         // Game won logic could be added here
         console.log('Game won!');
       }
-
-    this.currentQuestion = '';
+    } catch (error) {
+      console.error('Failed to get response:', error);
+      const errorMessage: ChatMessage = {
+        text: 'Sorry, I encountered an error. Please try again.',
+        isUser: false,
+        timestamp: new Date()
+      };
+      this.chatMessages.push(errorMessage);
+    } finally {
+      this.isLoading = false;
+    }
   }
 
   private getResponseText(response: GameResponse): string {

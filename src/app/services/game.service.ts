@@ -28,14 +28,20 @@ export class GameService {
   }
 
   private async selectCharacter(): Promise<void> {
-    const result = await this.inferenceService.makeInference({
-      prompt: `Pick a disney character.`,
-      systemPrompt: `You are a helpful assistant to a game called "Who Am I?".
-      You are given a question and you must respond with the name of the main character and nothing else.
-      You must respond with the name of one character and nothing else.`
+    const result = await this.inferenceService.makeInferenceCall({
+      messages: [
+        { role: 'system', content: `You are a helpful assistant to a game called "Who Am I?".
+        You are given a question and you must respond with the name of the main character and nothing else.
+        You must respond with the name of one character and nothing else.` },
+        { role: 'user', content: `Pick a disney character.` }
+      ],
+      temperature: 0.7,
+      max_tokens: 100,
+      stream: false
     });
-    console.log(result);
-    this.character = result.content;
+    // console.log(result);
+    this.character = result.choices[0]?.message?.content || '';
+    console.log(this.character);
     this.gameStarted = true;
   }
 
@@ -61,9 +67,8 @@ export class GameService {
     The player asks yes/no questions to guess the character. 
     You must respond with a reasoning and an answer in the following format:
     <response>
-      <reasoning> reasoning </reasoning>
+      <reasoning> very short reasoning </reasoning>
       <answer>YES</answer> or <answer>NO</answer> or <answer>NOT_VALID</answer>
-      <win>true</win> or <win>false</win>
     </response>`;
 
     const fullPrompt = `<question>${question}</question>`;

@@ -71,7 +71,7 @@ export class InferenceService {
     return this.isInitialized && this.engine !== null;
   }
 
-async makeInferenceCall(params: ChatCompletionRequestNonStreaming): Promise<ChatCompletion> {
+  async makeInferenceCall(params: ChatCompletionRequestNonStreaming): Promise<ChatCompletion> {
     if (!this.isReady()) {
         await this.initializeEngine();
       }
@@ -82,93 +82,6 @@ async makeInferenceCall(params: ChatCompletionRequestNonStreaming): Promise<Chat
       
     return this.engine.chat.completions.create(params);
   }
-
-  /**
-   * Make a general inference call
-   */
-  async makeInference(params:{prompt: string, systemPrompt?: string}): Promise<InferenceResponse> {
-    if (!this.isReady()) {
-      await this.initializeEngine();
-    }
-
-    if (!this.engine) {
-      return {
-        content: '',
-        success: false,
-        error: 'Engine not available'
-      };
-    }
-
-    try {
-      const messages: ChatCompletionMessageParam[] = [];
-      
-      if (params.systemPrompt) {
-        messages.push({ role: 'system', content: params.systemPrompt });
-      }
-      
-      messages.push({ role: 'user', content: params.prompt });
-
-      const response = await this.engine.chat.completions.create({
-        messages,
-        temperature: 0.7,
-        max_tokens: 500,
-        stream: false
-      });
-
-      const content = response.choices[0]?.message?.content || '';
-      
-      return {
-        content,
-        success: true
-      };
-    } catch (error) {
-      console.error('Inference error:', error);
-      return {
-        content: '',
-        success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
-      };
-    }
-  }
-
-  // /**
-  //  * Make an inference call as an Observable
-  //  */
-  // makeInferenceObservable(params:{prompt: string, systemPrompt?: string}): Observable<InferenceResponse> {
-  //   return from(this.makeInference(params));
-  // }
-
-
-
-  // /**
-  //  * Get available models (placeholder - WebLLM doesn't expose this directly)
-  //  */
-  // async getAvailableModels(): Promise<string[]> {
-  //   // WebLLM doesn't expose a direct method to get available models
-  //   // You can return a list of known models or implement custom logic
-  //   return ["Llama-2-7b-chat-q4f16_1", "Llama-2-13b-chat-q4f16_1"];
-  // }
-
-  // /**
-  //  * Change the model
-  //  */
-  // async changeModel(modelName: string): Promise<void> {
-  //   if (!this.engine) {
-  //     await this.initializeEngine();
-  //   }
-
-  //   if (!this.engine) {
-  //     throw new Error('Engine not available');
-  //   }
-
-  //   try {
-  //     await this.engine.reload(modelName);
-  //     console.log(`Model changed to: ${modelName}`);
-  //   } catch (error) {
-  //     console.error('Error changing model:', error);
-  //     throw error;
-  //   }
-  // }
 
   /**
    * Clean up resources
