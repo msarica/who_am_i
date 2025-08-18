@@ -15,7 +15,7 @@
   <div *ngIf="gameStarted" class="game-interface">
     <div class="header">
       <h2>Who Am I?</h2>
-      <button (click)="resetGame()" 
+      <button (click)="startGame()" 
               [disabled]="isLoading" 
               class="reset-button">New Game</button>
     </div>
@@ -23,12 +23,19 @@
     <!-- Chat Messages -->
     <div class="chat-container" #chatMessagesContainer>
       <div class="chat-messages">
-        <div *ngFor="let message of chatMessages" 
+        <div *ngFor="let message of chatMessages; let i = index" 
              [ngClass]="{'user-message': message.isUser, 'bot-message': !message.isUser}"
              class="message">
           <div class="message-content">
             <span class="message-text">{{ message.text }}</span>
             <span class="message-time">{{ message.timestamp | date:'shortTime' }}</span>
+            <!-- Retry button only for the last user message -->
+            <button *ngIf="message.isUser && isLastUserMessage(i) && lastQuestion && !isLoading" 
+                    (click)="retryLastQuestion()" 
+                    class="retry-icon-button"
+                    title="Retry this question">
+              🔄
+            </button>
           </div>
         </div>
         
@@ -51,6 +58,7 @@
     <!-- Question Input -->
     <div class="question-input">
       <input 
+        #questionInput
         type="text" 
         [(ngModel)]="currentQuestion" 
         placeholder="Ask a yes/no question..."
@@ -63,6 +71,22 @@
         <span *ngIf="!isLoading">Ask</span>
         <span *ngIf="isLoading">Sending...</span>
       </button>
+    </div>
+  </div>
+
+  <!-- Win Modal -->
+  <div *ngIf="showWinModal" class="modal-overlay" (click)="closeWinModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>🎉 Congratulations! 🎉</h2>
+      </div>
+      <div class="modal-body">
+        <p>You won the game! You guessed the character correctly!</p>
+        <div class="celebration-emoji">🎊 🏆 🎈</div>
+      </div>
+      <div class="modal-footer">
+        <button (click)="startGame()" class="modal-button primary">New Game</button>
+      </div>
     </div>
   </div>
 </div>
