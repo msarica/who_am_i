@@ -118,6 +118,7 @@
   overflow-y: auto;
   padding: 20px;
   background: #f8f9fa;
+  scroll-behavior: smooth;
 }
 
 .chat-messages {
@@ -161,6 +162,45 @@
   background: linear-gradient(45deg, #667eea, #764ba2);
   color: white;
   border-bottom-right-radius: 4px;
+  position: relative;
+}
+
+.user-message:hover .trash-btn {
+  opacity: 0.8;
+  visibility: visible;
+}
+
+.trash-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  opacity: 0;
+  visibility: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  color: #d32f2f;
+}
+
+.trash-btn:hover:not(:disabled) {
+  background: white;
+  opacity: 1;
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.trash-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
 }
 
 .message-text {
@@ -228,7 +268,21 @@
   background: white;
   border-top: 1px solid #e9ecef;
   display: flex;
+  flex-direction: column;
   gap: 15px;
+  align-items: center;
+}
+
+.answer-row {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.win-row {
+  display: flex;
   justify-content: center;
 }
 
@@ -241,36 +295,47 @@
   cursor: pointer;
   transition: all 0.3s ease;
   min-width: 100px;
+  flex: 1;
 }
 
 .yes-btn {
-  background: linear-gradient(45deg, #667eea, #764ba2);
+  background: linear-gradient(45deg, #4CAF50, #45a049);
   color: white;
 }
 
 .yes-btn:hover:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
 }
 
 .no-btn {
-  background: linear-gradient(45deg, #667eea, #764ba2);
+  background: linear-gradient(45deg, #f44336, #d32f2f);
   color: white;
 }
 
 .no-btn:hover:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 5px 15px rgba(244, 67, 54, 0.3);
 }
 
-.irrelevant-btn {
+.dont-know-btn {
   background: linear-gradient(45deg, #667eea, #764ba2);
   color: white;
 }
 
-.irrelevant-btn:hover:not(:disabled) {
+.dont-know-btn:hover:not(:disabled) {
   transform: translateY(-1px);
   box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+}
+
+.dont-know-btn {
+  background: linear-gradient(45deg, #9e9e9e, #757575);
+  color: white;
+}
+
+.dont-know-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 15px rgba(158, 158, 158, 0.3);
 }
 
 .answer-btn:disabled {
@@ -422,8 +487,17 @@
     gap: 10px;
   }
   
+  .answer-row {
+    flex-direction: row;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
   .answer-btn {
     min-width: auto;
+    padding: 10px 16px;
+    font-size: 0.9rem;
   }
   
   .guess-buttons {

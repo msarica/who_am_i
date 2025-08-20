@@ -91,7 +91,7 @@
 }
 
 .reverse-btn.active {
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   transform: translateY(-5px);
   box-shadow: 0 15px 35px rgba(79, 172, 254, 0.3);

@@ -2,7 +2,7 @@
   <!-- Game Interface -->
   <div class="game-interface">
     <div class="header">
-      <h2>Reverse Game</h2>
+      <h2>Who Am I?</h2>
       <div class="game-buttons">
         <button (click)="switchToClassic()" 
                 [disabled]="isLoading" 
@@ -13,14 +13,14 @@
       </div>
     </div>
     <!-- Chat Messages -->
-    <div class="chat-container">
+    <div #chatContainer class="chat-container" (scroll)="onChatScroll($event)">
       <div 
         #chatMessagesContainer 
         class="chat-messages"
         [class.loading]="isLoading">
         
         <div 
-          *ngFor="let message of chatMessages; trackBy: trackByIndex" 
+          *ngFor="let message of chatMessages; trackBy: trackByIndex; let i = index" 
           class="message"
           [ngClass]="getMessageClass(message)">
           
@@ -29,6 +29,15 @@
             <div class="message-timestamp">
               {{ message.timestamp | date:'shortTime' }}
             </div>
+            <!-- Trash icon for user answers -->
+            <button 
+              *ngIf="!message.isAI && message.type === 'question' && canRemoveAnswer(i)"
+              (click)="removeAnswer(i)"
+              [disabled]="isLoading"
+              class="trash-btn"
+              title="Remove this answer and question">
+              🗑️
+            </button>
           </div>
         </div>
 
@@ -50,24 +59,34 @@
 
     <!-- Answer Buttons -->
     <div *ngIf="!isLoading && isLastAIMessage(getLastAIMessageIndex())" class="answer-buttons">
-      <button 
-        class="answer-btn yes-btn" 
-        (click)="answerQuestion('YES')"
-        [disabled]="isLoading">
-        Yes
-      </button>
-      <button 
-        class="answer-btn no-btn" 
-        (click)="answerQuestion('NO')"
-        [disabled]="isLoading">
-        No
-      </button>
-      <button 
-        class="answer-btn irrelevant-btn" 
-        (click)="answerQuestion('IRRELEVANT')"
-        [disabled]="isLoading">
-        Irrelevant
-      </button>
+      <div class="answer-row">
+        <button 
+          class="answer-btn yes-btn" 
+          (click)="answerQuestion('YES')"
+          [disabled]="isLoading">
+          Yes
+        </button>
+        <button 
+          class="answer-btn no-btn" 
+          (click)="answerQuestion('NO')"
+          [disabled]="isLoading">
+          No
+        </button>
+        <button 
+          class="answer-btn dont-know-btn" 
+          (click)="answerQuestion('I_DONT_KNOW')"
+          [disabled]="isLoading">
+          I don't know
+        </button>
+      </div>
+      <div class="win-row">
+        <button 
+          class="answer-btn win-btn" 
+          (click)="gameWon()"
+          [disabled]="isLoading">
+          Win
+        </button>
+      </div>
     </div>
   </div>
 
@@ -76,14 +95,14 @@
     <div class="modal">
       <div class="modal-content">
         <h3>🎉 Congratulations! 🎉</h3>
-        <p>I successfully guessed your character!</p>
+        <p>I successfully guessed your character! It took me {{ chatMessages.length }} questions.</p>
         <button class="modal-btn" (click)="closeWinModal()">Play Again</button>
       </div>
     </div>
   </div>
 
   <!-- Guess Modal -->
-  <div *ngIf="showGuessModal" class="modal-overlay">
+  <!-- <div *ngIf="showGuessModal" class="modal-overlay">
     <div class="modal">
       <div class="modal-content">
         <h3>My Guess</h3>
@@ -95,5 +114,5 @@
         </div>
       </div>
     </div>
-  </div>
+  </div> -->
 </div>
