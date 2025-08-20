@@ -5,7 +5,7 @@ import { ChatCompletion } from '@mlc-ai/web-llm';
 import dedent from 'dedent';
 
 export interface GameResponse {
-  result: 'YES' | 'NO' | 'NOT_VALID';
+  result: 'YES' | 'NO' | 'NOT_VALID' | 'GAME_WON';
   reasoning?: string;
 }
 
@@ -13,6 +13,7 @@ export interface GameResponse {
   providedIn: 'root'
 })
 export class GameService {
+  private gameCount: number = 0;
   private character: string = '';
   private theme: string = 'disney';
   private gameStarted: boolean = false;
@@ -21,7 +22,7 @@ export class GameService {
       "Mickey Mouse",
       "Minnie Mouse",
       "Donald Duck",
-      "Daisy Duck",
+      "Daisy",
       "Goofy",
       "Pluto",
       "Chip",
@@ -71,7 +72,7 @@ export class GameService {
       "Jessie",
       "Bo Peep",
       "Mike Wazowski",
-      "James P. Sullivan (Sulley)",
+      "Sully",
       "Nemo",
       "Dory",
       "Marlin",
@@ -80,12 +81,6 @@ export class GameService {
       "Eve",
       "Carl Fredricksen",
       "Russell",
-      "Dug",
-      "Joy",
-      "Sadness",
-      "Anger",
-      "Fear",
-      "Disgust"
   ]);
 
   public gameWin$ = new Subject<boolean>();
@@ -98,6 +93,7 @@ export class GameService {
       throw new Error('Inference service is not ready. Please wait for the model to load.');
     }
     await this.selectCharacter();
+    this.gameCount++;
   }
 
   private async selectCharacter(): Promise<void> {
@@ -143,6 +139,7 @@ export class GameService {
       throw new Error('Game not started');
     }
 
+    const gameCount = this.gameCount;
     this.isGameWon(question);
 
     // Use the inference service to process the question with game-specific prompt
@@ -166,6 +163,13 @@ export class GameService {
       max_tokens: 100,
       stream: false
     });
+
+    if(gameCount !== this.gameCount) {
+      return {
+        result: 'GAME_WON',
+        reasoning: 'Game won!'
+      };
+    }
 
     return this.parseResponse(response);
   }

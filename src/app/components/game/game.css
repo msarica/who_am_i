@@ -127,6 +127,8 @@
   background: linear-gradient(45deg, #667eea, #764ba2);
   color: white;
   border-bottom-right-radius: 4px;
+  position: relative;
+  padding-right: 40px;
 }
 
 .bot-message .message-content {
@@ -187,13 +189,7 @@
   transform: none !important;
 }
 
-.user-message .message-content {
-  background: linear-gradient(45deg, #667eea, #764ba2);
-  color: white;
-  border-bottom-right-radius: 4px;
-  position: relative;
-  padding-right: 40px; /* Add padding to make room for the retry button */
-}
+
 
 .question-field {
   flex: 1;

@@ -93,6 +93,11 @@ export class GameComponent implements OnInit, AfterViewChecked {
 
     try {
       const response = await this.gameService.askQuestion(questionText);
+
+      if(response.result === 'GAME_WON') {
+        return;
+      }
+
       const botMessage: ChatMessage = {
         text: this.getResponseText(response),
         isUser: false,

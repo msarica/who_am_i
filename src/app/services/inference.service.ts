@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Observable, from, BehaviorSubject } from 'rxjs';
-import { CreateMLCEngine, MLCEngineInterface, ChatCompletionMessageParam, ChatCompletionRequestNonStreaming, ChatCompletion, InitProgressReport } from '@mlc-ai/web-llm';
 
 export interface InferenceResponse {
   content: string;
@@ -10,15 +9,14 @@ export interface InferenceResponse {
 
 export interface InferenceStatus {
   status: 'NOT_INITIALIZED' | 'INITIALIZING' | 'READY' | 'FAILED';
-  progress: InitProgressReport;
+  progress: any;
 }
-
 
 @Injectable({
   providedIn: 'root'
 })
 export class InferenceService {
-  private engine: MLCEngineInterface | null = null;
+  private engine: any = null;
   private isInitialized = false;
   private isInitializing = false;
   private initializationStatus = new BehaviorSubject<InferenceStatus>({status: 'NOT_INITIALIZED', progress: {text: '', progress: 0, timeElapsed: 0}});
@@ -26,7 +24,7 @@ export class InferenceService {
   constructor() {}
 
   /**
-   * Initialize the WebLLM engine
+   * Initialize the WebLLM engine with lazy loading
    */
   async initializeEngine(model: string): Promise<void> {
     if (this.isInitialized || this.isInitializing) {
@@ -34,13 +32,17 @@ export class InferenceService {
     }
 
     this.isInitializing = true;
-    this.initializationStatus.next({status: 'INITIALIZING', progress: {text: 'Initializing...', progress: 0, timeElapsed: 0}});
+    this.initializationStatus.next({status: 'INITIALIZING', progress: {text: 'Loading ML library...', progress: 0, timeElapsed: 0}});
 
     try {
+      // Dynamically import the ML library
+      const { CreateMLCEngine } = await import('@mlc-ai/web-llm');
+      
+      this.initializationStatus.next({status: 'INITIALIZING', progress: {text: 'Initializing engine...', progress: 0.3, timeElapsed: 0}});
+
       // Create the MLCEngine with default configuration
       this.engine = await CreateMLCEngine(model, {
-        initProgressCallback: (progress) => {
-        //   console.log('Progress:', progress);
+        initProgressCallback: (progress: any) => {
           // Update the status with more detailed progress information
           if (progress.text) {
             this.initializationStatus.next({status: 'INITIALIZING', progress: {text: `Loading: ${progress.text}`, progress: progress.progress, timeElapsed: progress.timeElapsed}});
@@ -75,7 +77,7 @@ export class InferenceService {
     return this.isInitialized && this.engine !== null;
   }
 
-  async makeInferenceCall(params: ChatCompletionRequestNonStreaming): Promise<ChatCompletion> {
+  async makeInferenceCall(params: any): Promise<any> {
     if (!this.isReady()) {
         throw new Error('Engine not initialized');
       }
