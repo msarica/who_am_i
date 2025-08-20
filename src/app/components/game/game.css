@@ -76,6 +76,11 @@
   font-weight: 600;
 }
 
+.header .game-buttons {
+  display: flex;
+  gap: 10px;
+}
+
 .reset-button {
   background: rgba(255, 255, 255, 0.2);
   color: white;
@@ -89,6 +94,15 @@
 
 .reset-button:hover {
   background: rgba(255, 255, 255, 0.3);
+}
+
+.reset-button.reverse-btn {
+  background: rgba(79, 172, 254, 0.2);
+  border-color: rgba(79, 172, 254, 0.3);
+}
+
+.reset-button.reverse-btn:hover {
+  background: rgba(79, 172, 254, 0.3);
 }
 
 .chat-container {

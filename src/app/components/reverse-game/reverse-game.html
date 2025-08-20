@@ -1,0 +1,99 @@
+<div class="reverse-game-container">
+  <!-- Game Interface -->
+  <div class="game-interface">
+    <div class="header">
+      <h2>Reverse Game</h2>
+      <div class="game-buttons">
+        <button (click)="switchToClassic()" 
+                [disabled]="isLoading" 
+                class="reset-button classic-btn">New Classic</button>
+        <button (click)="startGame()" 
+                [disabled]="isLoading" 
+                class="reset-button">New Reverse</button>
+      </div>
+    </div>
+    <!-- Chat Messages -->
+    <div class="chat-container">
+      <div 
+        #chatMessagesContainer 
+        class="chat-messages"
+        [class.loading]="isLoading">
+        
+        <div 
+          *ngFor="let message of chatMessages; trackBy: trackByIndex" 
+          class="message"
+          [ngClass]="getMessageClass(message)">
+          
+          <div class="message-content">
+            <div class="message-text">{{ message.text }}</div>
+            <div class="message-timestamp">
+              {{ message.timestamp | date:'shortTime' }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Loading indicator -->
+        <div *ngIf="isLoading" class="message bot-message">
+          <div class="message-content">
+            <div class="loading-indicator">
+              <span class="loading-text">Thinking...</span>
+              <div class="loading-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Answer Buttons -->
+    <div *ngIf="!isLoading && isLastAIMessage(getLastAIMessageIndex())" class="answer-buttons">
+      <button 
+        class="answer-btn yes-btn" 
+        (click)="answerQuestion('YES')"
+        [disabled]="isLoading">
+        Yes
+      </button>
+      <button 
+        class="answer-btn no-btn" 
+        (click)="answerQuestion('NO')"
+        [disabled]="isLoading">
+        No
+      </button>
+      <button 
+        class="answer-btn irrelevant-btn" 
+        (click)="answerQuestion('IRRELEVANT')"
+        [disabled]="isLoading">
+        Irrelevant
+      </button>
+    </div>
+  </div>
+
+  <!-- Win Modal -->
+  <div *ngIf="showWinModal" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-content">
+        <h3>🎉 Congratulations! 🎉</h3>
+        <p>I successfully guessed your character!</p>
+        <button class="modal-btn" (click)="closeWinModal()">Play Again</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Guess Modal -->
+  <div *ngIf="showGuessModal" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-content">
+        <h3>My Guess</h3>
+        <p>I think you're thinking of: <strong>{{ currentGuess }}</strong></p>
+        <p>Am I correct?</p>
+        <div class="guess-buttons">
+          <button class="modal-btn correct-btn" (click)="confirmGuess(true)">Yes, that's right!</button>
+          <button class="modal-btn incorrect-btn" (click)="confirmGuess(false)">No, try again</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

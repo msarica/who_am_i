@@ -13,8 +13,43 @@
     </div>
   </div>
 
-  <!-- Game Component -->
-  <app-game *ngIf="!isLoading"></app-game>
+  <!-- Game Interface -->
+  <div *ngIf="!isLoading" class="game-interface">
+    <!-- Game Selection Buttons -->
+    <div *ngIf="!gameStarted" class="game-selection">
+      <div class="game-buttons">
+        <button 
+          class="game-btn classic-btn" 
+          (click)="selectGame('classic')"
+          [class.active]="selectedGame === 'classic'">
+          <div class="btn-content">
+            <h3>Classic Game</h3>
+            <p>You ask questions, I answer yes/no</p>
+          </div>
+        </button>
+        <button 
+          class="game-btn reverse-btn" 
+          (click)="selectGame('reverse')"
+          [class.active]="selectedGame === 'reverse'">
+          <div class="btn-content">
+            <h3>Reverse Game</h3>
+            <p>I ask questions, you answer yes/no</p>
+          </div>
+        </button>
+      </div>
+      <button 
+        class="start-button" 
+        (click)="startSelectedGame()" 
+        [disabled]="isLoading">
+        <span *ngIf="!isLoading">Start Game</span>
+        <span *ngIf="isLoading">Starting...</span>
+      </button>
+    </div>
+
+    <!-- Game Components -->
+    <app-game *ngIf="gameStarted && selectedGame === 'classic'" (switchToReverseGame)="switchToReverseFromGame()"></app-game>
+    <app-reverse-game *ngIf="gameStarted && selectedGame === 'reverse'" (switchToClassicGame)="switchToClassicFromGame()"></app-reverse-game>
+  </div>
 </div>
 
 

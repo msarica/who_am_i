@@ -1,23 +1,16 @@
 <div class="game-container">
-  <!-- Start Game Panel -->
-  <div *ngIf="!gameStarted" class="start-panel">
-    <h1>Who am I?</h1>
-    <p>Think of a character and I'll try to guess it by asking yes/no questions!</p>
-    <button (click)="startGame()" 
-            [disabled]="isLoading" 
-            class="start-button">
-      <span *ngIf="!isLoading">Start Game</span>
-      <span *ngIf="isLoading">Loading...</span>
-    </button>
-  </div>
-
   <!-- Game Interface -->
-  <div *ngIf="gameStarted" class="game-interface">
+  <div class="game-interface">
     <div class="header">
-      <h2>Who Am I?</h2>
-      <button (click)="startGame()" 
-              [disabled]="isLoading" 
-              class="reset-button">New Game</button>
+      <h2>Classic Game</h2>
+      <div class="game-buttons">
+        <button (click)="startGame()" 
+                [disabled]="isLoading" 
+                class="reset-button">New Classic</button>
+        <button (click)="switchToReverse()" 
+                [disabled]="isLoading" 
+                class="reset-button reverse-btn">New Reverse</button>
+      </div>
     </div>
 
     <!-- Chat Messages -->

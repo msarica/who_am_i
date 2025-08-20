@@ -1,13 +1,14 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GameComponent } from './components/game/game';
+import { ReverseGameComponent } from './components/reverse-game/reverse-game';
 import { InferenceService } from './services/inference.service';
 import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, GameComponent],
+  imports: [CommonModule, GameComponent, ReverseGameComponent],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
@@ -15,6 +16,8 @@ export class AppComponent implements OnInit, OnDestroy {
   title = 'Who am I?';
   isLoading = false;
   loadingStatus = 'Initializing...';
+  selectedGame: 'classic' | 'reverse' = 'classic';
+  gameStarted = false;
   private subscription: Subscription | null = null;
 
   constructor(private inferenceService: InferenceService) {}
@@ -40,5 +43,22 @@ export class AppComponent implements OnInit, OnDestroy {
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
+  }
+
+  selectGame(game: 'classic' | 'reverse'): void {
+    this.selectedGame = game;
+    this.gameStarted = false;
+  }
+
+  startSelectedGame(): void {
+    this.gameStarted = true;
+  }
+
+  switchToReverseFromGame(): void {
+    this.selectedGame = 'reverse';
+  }
+
+  switchToClassicFromGame(): void {
+    this.selectedGame = 'classic';
   }
 }

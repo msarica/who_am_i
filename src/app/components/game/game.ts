@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewChecked, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { GameService, GameResponse } from '../../services/game.service';
@@ -19,8 +19,8 @@ interface ChatMessage {
 export class GameComponent implements OnInit, AfterViewChecked {
   @ViewChild('chatMessagesContainer', { static: false }) chatMessagesContainer!: ElementRef;
   @ViewChild('questionInput', { static: false }) questionInput!: ElementRef;
+  @Output() switchToReverseGame = new EventEmitter<void>();
   
-  gameStarted: boolean = false;
   character: string = '';
   currentQuestion: string = '';
   lastQuestion: string = '';
@@ -40,6 +40,9 @@ export class GameComponent implements OnInit, AfterViewChecked {
         this.showWinModal = true;
       }
     });
+    
+    // Auto-start the game when component is initialized
+    this.startGame();
   }
 
   ngAfterViewChecked(): void {
@@ -64,7 +67,6 @@ export class GameComponent implements OnInit, AfterViewChecked {
       this.showWinModal = false;
       this.chatMessages = [];
       await this.gameService.startGame();
-      this.gameStarted = true;
     } catch (error) {
       console.error('Failed to start game:', error);
       // You might want to show an error message to the user here
@@ -196,6 +198,10 @@ export class GameComponent implements OnInit, AfterViewChecked {
 
   closeWinModal(): void {
     this.startGame();
+  }
+
+  switchToReverse(): void {
+    this.switchToReverseGame.emit();
   }
 
   isLastUserMessage(index: number): boolean {
