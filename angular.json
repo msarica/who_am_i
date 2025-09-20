@@ -17,7 +17,6 @@
           "builder": "@angular/build:application",
           "options": {
             "browser": "src/main.ts",
-            "baseHref": "/whoami/",
             "polyfills": [
               "zone.js"
             ],
